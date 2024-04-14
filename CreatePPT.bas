@@ -4,10 +4,28 @@ Attribute VB_Name = "CreatePPT"
 'Slide size in inches: 10 (width), 5.625 (height). In Points: 720, 405
 
 ' Settings
+Const g_PPTContentFile As String = "ppt_content_telugu_song.txt"
+Const g_ParagraphsPerSlide As Integer = 2
+Const g_TextBoxLeftDistance As Integer = 10
+Const g_TextBoxTopDistance As Integer = 10
+Const g_TextBoxWidthPercent As Single = 0.975
 Const g_SlideWidth As Integer = 720
 Const g_SlideHeight As Integer = 405
-Const g_SlideSeparatorTag As String = ""
-Const g_PPTContentFile As String = "ppt_content_telugu_song.txt"
+Const g_ParagraphSeparatorTag As String = "" ' A blank line marks a new paragraph
+
+' When 1 slide has 2 paragraphs (e.g. telugu and english)
+' Allow different font properties for each para
+Public Function GetParagraphInfos() As ParagraphInfo()
+    Dim g_ParagraphInfos(1 To 2) As ParagraphInfo
+    g_ParagraphInfos(1).FontName = "Nirmala UI"
+    g_ParagraphInfos(1).FontSize = 38
+    g_ParagraphInfos(1).FontColor = vbBlack
+    
+    g_ParagraphInfos(2).FontName = "Calibri"
+    g_ParagraphInfos(2).FontSize = 34
+    g_ParagraphInfos(2).FontColor = vbWhite
+    GetParagraphInfos = g_ParagraphInfos
+End Function
 
 
 ' ========================================================
@@ -31,12 +49,60 @@ Do While activePres.Slides.Count > 1
 Loop
 
 Set templateSlide = activePres.Slides(1)
+Call CreateTextBoxes(templateSlide)
 Call GenerateSlides(activePres, templateSlide)
-Call FormatTextInSlides(activePres)
 
 activePres.Save
 
 End Sub ' MainCreatePPT
+
+
+' ========================================================
+' Create required number of TextBoxes on a slide, and set their properties
+Sub CreateTextBoxes(templateSlide As Slide)
+
+' Delete existing textboxes
+With templateSlide.Shapes
+    For intShape = .Count To 1 Step -1
+        With .Item(intShape)
+            If .Type = msoTextBox Then .Delete
+        End With
+    Next
+End With
+
+' Each paragraph goes into one TextBox.
+Dim textBoxShape As Shape
+Dim textBoxNumber As Integer
+Dim textBoxTopPos As Integer
+Dim textBoxHeight As Single
+Dim oTxtRng As TextRange
+Dim oTxtFont As font
+Dim paragraphInfos() As ParagraphInfo
+paragraphInfos = GetParagraphInfos()
+
+textBoxHeight = g_SlideHeight / g_ParagraphsPerSlide
+For textBoxNumber = 1 To g_ParagraphsPerSlide
+    textBoxTopPos = g_TextBoxTopDistance + (textBoxNumber - 1) * textBoxHeight
+    Set textBoxShape = templateSlide.Shapes.AddTextbox(Orientation:=msoTextOrientationHorizontal, _
+        Left:=g_TextBoxLeftDistance, Top:=textBoxTopPos, Width:=g_TextBoxWidthPercent * g_SlideWidth, Height:=textBoxHeight)
+    textBoxShape.TextFrame.TextRange.text = ""
+    
+    'distance of the text from the shape's border
+    textBoxShape.TextFrame.MarginLeft = 0
+    textBoxShape.TextFrame.MarginTop = 0
+    
+    Set oTxtRng = textBoxShape.TextFrame.TextRange
+    oTxtRng.Paragraphs.ParagraphFormat.Alignment = ppAlignLeft
+    Set oTxtFont = oTxtRng.font
+    oTxtFont.Size = paragraphInfos(textBoxNumber).FontSize
+    oTxtFont.Color = paragraphInfos(textBoxNumber).FontColor
+    oTxtFont.Name = paragraphInfos(textBoxNumber).FontName
+    oTxtFont.Bold = msoFalse
+    oTxtFont.Italic = msoFalse
+    
+Next textBoxNumber
+
+End Sub 'CreateTextBoxes
 
 
 ' ========================================================
@@ -45,7 +111,8 @@ End Sub ' MainCreatePPT
 Sub GenerateSlides(activePres As Presentation, templateSlide As Slide)
 Dim curSlide As Slide
 Dim stringCompareResult As Integer
-Dim startNewSlide As Boolean
+Dim paragraphNumberInSlide As Integer
+Dim textBoxNumberInSlide As Integer
 Dim fullFilePath As String
 
 fullFilePath = activePres.Path & "\" & g_PPTContentFile
@@ -56,8 +123,6 @@ If Len(Dir$(fullFilePath)) = 0 Then
 End If
 
 Set curSlide = templateSlide.Duplicate()(1)
-startNewSlide = True
-
 Dim sFileContents As String
 Call UnicodeTextReader.GetFileText(fullFilePath, "utf8", sFileContents)
 
@@ -65,25 +130,32 @@ Dim sLines() As String
 Dim lineFromFile As Variant
 
 sLines = Split(sFileContents, vbNewLine)
+paragraphNumberInSlide = 1
 
 For Each lineFromFile In sLines
     'Debug.Print lineFromFile
-    stringCompareResult = StrComp(g_SlideSeparatorTag, lineFromFile, vbTextCompare)
+    stringCompareResult = StrComp(g_ParagraphSeparatorTag, lineFromFile, vbTextCompare)
     If stringCompareResult = 0 Then
-        Set curSlide = templateSlide.Duplicate()(1)
-        curSlide.MoveTo (activePres.Slides.Count)
-        startNewSlide = True
+        paragraphNumberInSlide = paragraphNumberInSlide + 1
+        If paragraphNumberInSlide > g_ParagraphsPerSlide Then
+            Set curSlide = templateSlide.Duplicate()(1)
+            curSlide.MoveTo (activePres.Slides.Count)
+            paragraphNumberInSlide = 1
+        End If
+        
     End If
     
+    textBoxNumberInSlide = 0
     For Each curShape In curSlide.Shapes
-        If curShape.HasTextFrame Then
-            If startNewSlide Then
-                curShape.TextFrame.TextRange.text = ""
-                startNewSlide = False
+        If curShape.Type = msoTextBox Then
+            textBoxNumberInSlide = textBoxNumberInSlide + 1
+            If textBoxNumberInSlide = paragraphNumberInSlide Then
+                curShape.TextFrame.TextRange.text = curShape.TextFrame.TextRange.text & lineFromFile & vbCr
+                Exit For
             End If
-            curShape.TextFrame.TextRange.text = curShape.TextFrame.TextRange.text & lineFromFile & vbCr
         End If
     Next curShape
+    
 Next lineFromFile
 
 End Sub ' GenerateSlides

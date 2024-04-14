@@ -1,13 +1,9 @@
 Attribute VB_Name = "FormatSlides"
-
-' Settings
-Const g_FontSize As Integer = 32
-Const g_FontName As String = "Nirmala UI"
-' for telugu text "Nirmala UI"
-' for english text "Calibri"
-Const g_FontColor As Long = vbBlack
-Const g_TextBoxWidthPercent As Single = 0.975
-
+Public Type ParagraphInfo
+    FontSize As Integer
+    FontName As String
+    FontColor As Long
+End Type
 
 ' ========================================================
 ' Apply a consistent format to the text in all slides
@@ -29,11 +25,10 @@ End Sub 'FormatTextInSlides
 
 
 ' ========================================================
-' Format text according to the settings
+' Format text according to requirements
 Sub FormatText(oShp As Object)
 Dim oTxtRng As TextRange
-Dim oTxtFont As font
-Dim fontSize As Single
+Dim FontSize As Single
 Dim shapeText As String
 Dim shapeTextFormatted As String
 Dim trimLine As String
@@ -42,26 +37,9 @@ Dim lineLength As Integer
 Dim lineSizePixels As Integer
 Dim lineCrossHalfWidth As Boolean
 
-'distance of the Shape from the slide's border
-oShp.Top = 10
-oShp.Left = 10
-oShp.Width = g_TextBoxWidthPercent * g_SlideWidth
-        
-'distance of the text from the shape's border
-oShp.TextFrame.MarginLeft = 0
-oShp.TextFrame.MarginTop = 0
-
 Set oTxtRng = oShp.TextFrame.TextRange
-oTxtRng.Paragraphs.ParagraphFormat.Alignment = ppAlignLeft
+FontSize = oTxtRng.font.Size
 
-Set oTxtFont = oTxtRng.font
-oTxtFont.SIZE = g_FontSize
-oTxtFont.Bold = msoFalse
-oTxtFont.Italic = msoFalse
-oTxtFont.Color = g_FontColor
-oTxtFont.Name = g_FontName
-
-fontSize = oTxtFont.SIZE
 shapeText = oTxtRng.text
 shapeTextLines = Split(shapeText, vbCr)
 formattedTextLength = 0
