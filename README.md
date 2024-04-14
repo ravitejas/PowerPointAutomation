@@ -25,3 +25,7 @@ Detailed version:
 10. You can re-run it with different Settings or .txt files.
 11. When you are done, save the .pptm file as a .pptx file : i.e., a regular PowerPoint file without the VBA code.
 12. Sample .pptm and .txt files are located in examples/ folder.
+
+Update 4/13/2024:
+For step 2 above: The number of paragraphs per Slide can be configured. 
+Different font settings can be specified for each paragraph.
