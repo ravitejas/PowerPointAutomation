@@ -4,7 +4,8 @@ Attribute VB_Name = "CreatePPT"
 'Slide size in inches: 10 (width), 5.625 (height). In Points: 720, 405
 
 ' Settings
-Const g_PPTContentFile As String = "ppt_content_telugu_song.txt"
+Const g_PPTContentFileName As String = "What can wash away"
+Const g_TextFileFormat As String = ".txt"
 Const g_ParagraphsPerSlide As Integer = 2
 Const g_TextBoxLeftDistance As Integer = 10
 Const g_TextBoxTopDistance As Integer = 10
@@ -17,13 +18,14 @@ Const g_ParagraphSeparatorTag As String = "" ' A blank line marks a new paragrap
 ' Allow different font properties for each para
 Public Function GetParagraphInfos() As ParagraphInfo()
     Dim g_ParagraphInfos(1 To 2) As ParagraphInfo
-    g_ParagraphInfos(1).FontName = "Nirmala UI"
-    g_ParagraphInfos(1).FontSize = 38
+    g_ParagraphInfos(1).FontName = "Calibri"
+    g_ParagraphInfos(1).FontSize = 34
     g_ParagraphInfos(1).FontColor = vbBlack
     
-    g_ParagraphInfos(2).FontName = "Calibri"
-    g_ParagraphInfos(2).FontSize = 34
-    g_ParagraphInfos(2).FontColor = vbWhite
+    g_ParagraphInfos(2).FontName = "Nirmala UI"
+    g_ParagraphInfos(2).FontSize = 44
+    g_ParagraphInfos(2).FontColor = vbBlack
+
     GetParagraphInfos = g_ParagraphInfos
 End Function
 
@@ -52,7 +54,9 @@ Set templateSlide = activePres.Slides(1)
 Call CreateTextBoxes(templateSlide)
 Call GenerateSlides(activePres, templateSlide)
 
-activePres.Save
+Dim pptPath As String
+pptPath = activePres.Path & "\" & g_PPTContentFileName
+activePres.SaveCopyAs pptPath, ppSaveAsOpenXMLPresentation
 
 End Sub ' MainCreatePPT
 
@@ -115,7 +119,7 @@ Dim paragraphNumberInSlide As Integer
 Dim textBoxNumberInSlide As Integer
 Dim fullFilePath As String
 
-fullFilePath = activePres.Path & "\" & g_PPTContentFile
+fullFilePath = activePres.Path & "\" & g_PPTContentFileName & g_TextFileFormat
 ' does the file exist?
 If Len(Dir$(fullFilePath)) = 0 Then
     Debug.Print "ppt content file " & fullFilePath & " could not be found"
@@ -157,5 +161,13 @@ For Each lineFromFile In sLines
     Next curShape
     
 Next lineFromFile
+
+' Add the PPT Title to the template (first) slide
+For Each curShape In templateSlide.Shapes
+    If curShape.Type = msoTextBox Then
+        curShape.TextFrame.TextRange.text = g_PPTContentFileName
+        Exit For
+    End If
+Next curShape
 
 End Sub ' GenerateSlides
