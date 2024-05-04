@@ -29,3 +29,7 @@ Detailed version:
 Update 4/13/2024:
 For step 2 above: The number of paragraphs per Slide can be configured. 
 Different font settings can be specified for each paragraph.
+
+Update 5/3/2024:
+Generated pptx will be saved as a new file in the same folder as the pptm.
+pptx file name will be the same as that of the txt file.
