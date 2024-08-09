@@ -4,11 +4,10 @@ Attribute VB_Name = "CreatePPT"
 'Slide size in inches: 10 (width), 5.625 (height). In Points: 720, 405
 
 ' Settings
-Const g_PPTContentFileName As String = "What can wash away"
+Const g_PPTContentFileName As String = "2 Preminchedan Adhikamugaa"
 Const g_TextFileFormat As String = ".txt"
 Const g_ParagraphsPerSlide As Integer = 2
 Const g_TextBoxLeftDistance As Integer = 10
-Const g_TextBoxTopDistance As Integer = 10
 Const g_TextBoxWidthPercent As Single = 0.975
 Const g_SlideWidth As Integer = 720
 Const g_SlideHeight As Integer = 405
@@ -20,11 +19,17 @@ Public Function GetParagraphInfos() As ParagraphInfo()
     Dim g_ParagraphInfos(1 To 2) As ParagraphInfo
     g_ParagraphInfos(1).FontName = "Calibri"
     g_ParagraphInfos(1).FontSize = 34
-    g_ParagraphInfos(1).FontColor = vbBlack
+    g_ParagraphInfos(1).FontColor = RGB(60, 255, 255)
+    g_ParagraphInfos(1).TextBoxTopDistance = 10
+    g_ParagraphInfos(1).TextOutlineWeight = 1
+    g_ParagraphInfos(1).TextOutlineColor = RGB(0, 0, 0)
     
     g_ParagraphInfos(2).FontName = "Nirmala UI"
-    g_ParagraphInfos(2).FontSize = 44
-    g_ParagraphInfos(2).FontColor = vbBlack
+    g_ParagraphInfos(2).FontSize = 38
+    g_ParagraphInfos(2).FontColor = RGB(0, 0, 0)
+    g_ParagraphInfos(2).TextBoxTopDistance = 14
+    g_ParagraphInfos(2).TextOutlineWeight = 0.75
+    g_ParagraphInfos(2).TextOutlineColor = vbWhite
 
     GetParagraphInfos = g_ParagraphInfos
 End Function
@@ -80,16 +85,24 @@ Dim textBoxNumber As Integer
 Dim textBoxTopPos As Integer
 Dim textBoxHeight As Single
 Dim oTxtRng As TextRange
+Dim oTxtRng2 As TextRange2
 Dim oTxtFont As font
 Dim paragraphInfos() As ParagraphInfo
 paragraphInfos = GetParagraphInfos()
 
 textBoxHeight = g_SlideHeight / g_ParagraphsPerSlide
 For textBoxNumber = 1 To g_ParagraphsPerSlide
-    textBoxTopPos = g_TextBoxTopDistance + (textBoxNumber - 1) * textBoxHeight
+    textBoxTopPos = paragraphInfos(textBoxNumber).TextBoxTopDistance + (textBoxNumber - 1) * textBoxHeight
     Set textBoxShape = templateSlide.Shapes.AddTextbox(Orientation:=msoTextOrientationHorizontal, _
         Left:=g_TextBoxLeftDistance, Top:=textBoxTopPos, Width:=g_TextBoxWidthPercent * g_SlideWidth, Height:=textBoxHeight)
     textBoxShape.TextFrame.TextRange.text = ""
+    
+    Set oTxtRng2 = textBoxShape.TextFrame2.TextRange
+    With oTxtRng2.font.Line
+    .Visible = True
+    .ForeColor.RGB = paragraphInfos(textBoxNumber).TextOutlineColor
+    .Weight = paragraphInfos(textBoxNumber).TextOutlineWeight
+    End With
     
     'distance of the text from the shape's border
     textBoxShape.TextFrame.MarginLeft = 0
@@ -101,7 +114,7 @@ For textBoxNumber = 1 To g_ParagraphsPerSlide
     oTxtFont.Size = paragraphInfos(textBoxNumber).FontSize
     oTxtFont.Color = paragraphInfos(textBoxNumber).FontColor
     oTxtFont.Name = paragraphInfos(textBoxNumber).FontName
-    oTxtFont.Bold = msoFalse
+    oTxtFont.Bold = msoTrue
     oTxtFont.Italic = msoFalse
     
 Next textBoxNumber

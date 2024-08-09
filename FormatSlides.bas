@@ -3,6 +3,9 @@ Public Type ParagraphInfo
     FontSize As Integer
     FontName As String
     FontColor As Long
+    TextBoxTopDistance As Integer
+    TextOutlineWeight As Single
+    TextOutlineColor As Long
 End Type
 
 ' ========================================================
