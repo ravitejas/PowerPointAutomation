@@ -33,3 +33,7 @@ Different font settings can be specified for each paragraph.
 Update 5/3/2024:
 Generated pptx will be saved as a new file in the same folder as the pptm.
 pptx file name will be the same as that of the txt file.
+
+Update 8/9/2024:
+Added settings for Text Outline. 
+By changing the color and weight of the outline, we can make the text more readable against backgrounds of different colors / shapes.
