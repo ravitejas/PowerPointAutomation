@@ -4,9 +4,9 @@ Attribute VB_Name = "CreatePPT"
 'Slide size in inches: 10 (width), 5.625 (height). In Points: 720, 405
 
 ' Settings
-Const g_PPTContentFileName As String = "2 Preminchedan Adhikamugaa"
+Const g_PPTContentFileName As String = "3 When I fear my faith will fail"
 Const g_TextFileFormat As String = ".txt"
-Const g_ParagraphsPerSlide As Integer = 2
+Const g_ParagraphsPerSlide As Integer = 1
 Const g_TextBoxLeftDistance As Integer = 10
 Const g_TextBoxWidthPercent As Single = 0.975
 Const g_SlideWidth As Integer = 720
@@ -18,18 +18,18 @@ Const g_ParagraphSeparatorTag As String = "" ' A blank line marks a new paragrap
 Public Function GetParagraphInfos() As ParagraphInfo()
     Dim g_ParagraphInfos(1 To 2) As ParagraphInfo
     g_ParagraphInfos(1).FontName = "Calibri"
-    g_ParagraphInfos(1).FontSize = 34
-    g_ParagraphInfos(1).FontColor = RGB(60, 255, 255)
-    g_ParagraphInfos(1).TextBoxTopDistance = 10
-    g_ParagraphInfos(1).TextOutlineWeight = 1
-    g_ParagraphInfos(1).TextOutlineColor = RGB(0, 0, 0)
-    
+    g_ParagraphInfos(1).FontSize = 36
+    g_ParagraphInfos(1).FontColor = vbBlack
+    g_ParagraphInfos(1).TextBoxTopDistance = 28
+    g_ParagraphInfos(1).TextOutlineWeight = 0.75
+    g_ParagraphInfos(1).TextOutlineColor = vbWhite
+    ' Calibri , Nirmala UI, RGB(0,0,0), vbBlack, vbWhite
     g_ParagraphInfos(2).FontName = "Nirmala UI"
-    g_ParagraphInfos(2).FontSize = 38
-    g_ParagraphInfos(2).FontColor = RGB(0, 0, 0)
+    g_ParagraphInfos(2).FontSize = 36
+    g_ParagraphInfos(2).FontColor = vbWhite
     g_ParagraphInfos(2).TextBoxTopDistance = 14
     g_ParagraphInfos(2).TextOutlineWeight = 0.75
-    g_ParagraphInfos(2).TextOutlineColor = vbWhite
+    g_ParagraphInfos(2).TextOutlineColor = vbBlack
 
     GetParagraphInfos = g_ParagraphInfos
 End Function
@@ -109,7 +109,7 @@ For textBoxNumber = 1 To g_ParagraphsPerSlide
     textBoxShape.TextFrame.MarginTop = 0
     
     Set oTxtRng = textBoxShape.TextFrame.TextRange
-    oTxtRng.Paragraphs.ParagraphFormat.Alignment = ppAlignLeft
+    oTxtRng.Paragraphs.ParagraphFormat.Alignment = ppAlignCenter
     Set oTxtFont = oTxtRng.font
     oTxtFont.Size = paragraphInfos(textBoxNumber).FontSize
     oTxtFont.Color = paragraphInfos(textBoxNumber).FontColor
