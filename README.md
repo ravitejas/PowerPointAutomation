@@ -15,7 +15,7 @@ Steps to use it:
 7. Observe that new slides have been created, and text from the local text file is added to each slide.
 8. A new pptx file is created with the same name as the txt file.
 
-Mote info: 
+More info: 
 1. Each paragraph (multiple lines) of text will be added to one Slide.
 2. A blank line between paragraphs marks the transition to a new Slide.
 3. Check each Module for Settings at the top of the file. Set values as per your preferences.
