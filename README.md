@@ -10,10 +10,12 @@ Steps to use it:
 2. Go to the examples folder and download the latest pptm file.
 3. Right click on the pptm file, open Properties, and Unblock it.
 4. Open it, go to the Developer tab, then open the Visual Basic Editor.
-5. Enter the name of the txt file as the value of "g_PPTContentFileName"
-6. Press F5 to run the Macro "MainCreatePPT"
-7. Observe that new slides have been created, and text from the local text file is added to each slide.
-8. A new pptx file is created with the same name as the txt file.
+5. Open the "CreatePPT" module and enter the name of the txt file as the value of "g_PPTContentFileName"
+6. Update "g_ParagraphsPerSlide". If the song is of a single language, use "1". If the song has translation (telugu and english on the same slide), use "2".
+7. Press F5 to run the Macro "MainCreatePPT"
+8. Observe that new slides have been created, and text from the local text file is added to each slide.
+9. If the slides look good, you can close the pptm file. Or you can change the text or font properties, etc., and generate slides again.
+10. A new pptx file is created with the same name as the txt file. You can edit this for further manual modifications.
 
 More info: 
 1. Each paragraph (multiple lines) of text will be added to one Slide.
